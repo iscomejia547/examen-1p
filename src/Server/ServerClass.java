@@ -47,7 +47,7 @@ public class ServerClass{
             }
         }
     }
-    public void attentComm(){
+    public void attemptComm(){
         Comm connect=new Comm();
         connect.start();
     }
@@ -80,10 +80,9 @@ public class ServerClass{
         }
         float salario=dis.readFloat();
         float inss=(inss(salario*12)/12);
-        float ir=(ir(salario*12)/12);
-        float neto=salario-inss-ir;
-        System.out.println(salario);
-        dos.writeUTF(String.format("%.2f", salario)+","+String.format("%.2f", ir)+","+
+        float IR=(ir(salario*12)/12);
+        float neto=salario-inss-IR;
+        dos.writeUTF(String.format("%.2f", salario)+","+String.format("%.2f", IR)+","+
                 String.format("%.2f", inss)+","+String.format("%.2f", neto));
     }
     //metodos para calcular

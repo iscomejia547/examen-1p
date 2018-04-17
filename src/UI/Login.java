@@ -126,7 +126,7 @@ public class Login extends javax.swing.JDialog {
     private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
         try {
             server=new ServerClass();
-            server.attentComm();
+            server.attemptComm();
             com=new Socket(InetAddress.getLocalHost().getHostAddress(), 1206);
             dis=new DataInputStream(com.getInputStream());
             dos=new DataOutputStream(com.getOutputStream());

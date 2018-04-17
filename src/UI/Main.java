@@ -13,7 +13,6 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -124,7 +123,7 @@ public class Main extends javax.swing.JFrame {
         //esperando conexion
         
         try {
-            server.attentComm();
+            server.attemptComm();
             com=new Socket(InetAddress.getLocalHost().getHostAddress(), 1206);
             dis=new DataInputStream(com.getInputStream());
             dos=new DataOutputStream(com.getOutputStream());
