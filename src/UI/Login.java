@@ -110,10 +110,15 @@ public class Login extends javax.swing.JDialog {
         } catch (Exception ex) {
             Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, ex);
         }
-        System.out.println(adm);
         
         if(adm.equals("true")){
             Main frame=new Main();
+            try {
+                server.resetter();
+            } catch (IOException ex) {
+                Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            frame.setServer(server);
             frame.setVisible(true);
             this.dispose();
         }else{

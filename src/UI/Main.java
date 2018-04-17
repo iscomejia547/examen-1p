@@ -5,15 +5,29 @@
  */
 package UI;
 
+import Server.ServerClass;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.net.Socket;
+
 /**
  *
  * @author Sistema19
  */
 public class Main extends javax.swing.JFrame {
+    private final Object[] Header={"Salario Bruto", "IR", "INSS", "Salario Neto"};
+    private ServerClass server;
+    private Socket com;
+    private DataOutputStream dos;
+    private DataInputStream dis;
 
+    public void setServer(ServerClass server) {
+        this.server = server;
+    }
     /**
      * Creates new form Main
      */
+    
     public Main() {
         initComponents();
     }
@@ -37,6 +51,7 @@ public class Main extends javax.swing.JFrame {
         jButton1 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("App");
         setExtendedState(6);
 
         jPanel1.setLayout(new java.awt.BorderLayout());

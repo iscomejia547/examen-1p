@@ -56,17 +56,42 @@ public class ServerClass extends Thread{
         //0 es usuario, 1 es contraseña
         String[] rev=dis.readUTF().split(",");
         String user=rev[0], pswd=rev[1];
-        System.out.println(user);
-        System.out.println(pswd);
-        System.out.println(prop.getProperty(user));
-        System.out.println(prop.getProperty(user).equalsIgnoreCase(pswd));
         if(prop.getProperty(user)!=null){
             dos.writeUTF(String.valueOf(prop.getProperty(user).equalsIgnoreCase(pswd)));
+            return;
         }else{
             dos.writeUTF("false");
             return;
         }
     }
+    public void resetter() throws IOException{
+        com.close();
+    }
     
-    
+    public void calculate() throws IOException{
+        float salario=dis.readFloat();
+        float inss=inss(salario);
+        float ir=ir(salario);
+        float neto=salario-inss-ir;
+        dos.writeUTF(String.format("%.2f", salario)+","+String.format("%.2f", ir)+","+
+                String.format("%.2f", inss)+","+String.format("%.2f", neto)+",");
+    }
+    //metodos para calcular
+    private float inss(float base){
+        return (float)(base*0.0625);
+    }
+    private float ir(float base){
+        if(base<=100000){
+            return 0.0f;
+        }else if(base>100000 & base <=200000){
+            return (float)(base*0.15);
+        }else if(base>200000 & base <=350000){
+            return (float)(base*0.20+15000);
+        }else if(base>350000 & base <=500000){
+            return (float)(base*0.25+45000);
+        }else if(base>500000){
+            return (float)(base*0.3+82500);
+        }
+        return 0.0f;
+}
 }
