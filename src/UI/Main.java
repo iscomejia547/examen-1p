@@ -8,14 +8,20 @@ package UI;
 import Server.ServerClass;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.IOException;
+import java.net.InetAddress;
 import java.net.Socket;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
 
 /**
  *
  * @author Sistema19
  */
 public class Main extends javax.swing.JFrame {
-    private final Object[] Header={"Salario Bruto", "IR", "INSS", "Salario Neto"};
+    private final Object[] header={"Salario Bruto", "IR", "INSS", "Salario Neto"};
     private ServerClass server;
     private Socket com;
     private DataOutputStream dos;
@@ -44,19 +50,24 @@ public class Main extends javax.swing.JFrame {
 
         jPanel1 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
+        tab = new javax.swing.JTable();
         jPanel2 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
-        jTextField1 = new javax.swing.JTextField();
-        jButton1 = new javax.swing.JButton();
+        salariotxt = new javax.swing.JTextField();
+        sendbtn = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("App");
         setExtendedState(6);
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowOpened(java.awt.event.WindowEvent evt) {
+                formWindowOpened(evt);
+            }
+        });
 
         jPanel1.setLayout(new java.awt.BorderLayout());
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        tab.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null},
                 {null, null, null, null},
@@ -67,7 +78,7 @@ public class Main extends javax.swing.JFrame {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
-        jScrollPane1.setViewportView(jTable1);
+        jScrollPane1.setViewportView(tab);
 
         jPanel1.add(jScrollPane1, java.awt.BorderLayout.CENTER);
 
@@ -86,22 +97,54 @@ public class Main extends javax.swing.JFrame {
         gridBagConstraints.gridy = 0;
         gridBagConstraints.ipadx = 120;
         gridBagConstraints.insets = new java.awt.Insets(12, 12, 12, 12);
-        jPanel2.add(jTextField1, gridBagConstraints);
+        jPanel2.add(salariotxt, gridBagConstraints);
 
-        jButton1.setText("Enviar");
+        sendbtn.setText("Enviar");
+        sendbtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                sendbtnActionPerformed(evt);
+            }
+        });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 2;
         gridBagConstraints.gridwidth = 2;
         gridBagConstraints.ipadx = 55;
         gridBagConstraints.insets = new java.awt.Insets(5, 0, 30, 0);
-        jPanel2.add(jButton1, gridBagConstraints);
+        jPanel2.add(sendbtn, gridBagConstraints);
 
         getContentPane().add(jPanel2, java.awt.BorderLayout.PAGE_START);
 
         setSize(new java.awt.Dimension(416, 339));
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
+
+    private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
+        tab.setModel(new DefaultTableModel(new Object[0][0], header));
+        //esperando conexion
+        
+        try {
+            server.attentComm();
+            com=new Socket(InetAddress.getLocalHost().getHostAddress(), 1206);
+            dis=new DataInputStream(com.getInputStream());
+            dos=new DataOutputStream(com.getOutputStream());
+        } catch (IOException ex) {
+            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+        }       
+    }//GEN-LAST:event_formWindowOpened
+
+    private void sendbtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sendbtnActionPerformed
+        float salario=Float.parseFloat(salariotxt.getText());
+        Object[][] table=new Object[1][4];
+        try {
+            dos.writeFloat(salario);
+            server.calculate();
+            table[0]=dis.readUTF().split(",");
+        } catch (IOException ex) {
+            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        tab.setModel(new DefaultTableModel(table, header));
+    }//GEN-LAST:event_sendbtnActionPerformed
 
     /**
      * @param args the command line arguments
@@ -139,12 +182,12 @@ public class Main extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTable jTable1;
-    private javax.swing.JTextField jTextField1;
+    private javax.swing.JTextField salariotxt;
+    private javax.swing.JButton sendbtn;
+    private javax.swing.JTable tab;
     // End of variables declaration//GEN-END:variables
 }

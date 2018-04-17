@@ -107,17 +107,14 @@ public class Login extends javax.swing.JDialog {
             adm=dis.readUTF();
         } catch (IOException ex) {
             Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (Exception ex) {
-            Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
         if(adm.equals("true")){
-            Main frame=new Main();
             try {
                 server.resetter();
             } catch (IOException ex) {
                 Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, ex);
             }
+            Main frame=new Main();
             frame.setServer(server);
             frame.setVisible(true);
             this.dispose();
@@ -129,8 +126,8 @@ public class Login extends javax.swing.JDialog {
     private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
         try {
             server=new ServerClass();
-            server.start();
-            com=new Socket(InetAddress.getLocalHost().getHostAddress(), 1207);
+            server.attentComm();
+            com=new Socket(InetAddress.getLocalHost().getHostAddress(), 1206);
             dis=new DataInputStream(com.getInputStream());
             dos=new DataOutputStream(com.getOutputStream());
         } catch (IOException ex) {

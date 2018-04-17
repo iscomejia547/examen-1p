@@ -19,7 +19,7 @@ import java.util.logging.Logger;
  *
  * @author Sistema19
  */
-public class ServerClass extends Thread{
+public class ServerClass{
     private ServerSocket server;
     private Socket com;
     private DataInputStream dis;
@@ -27,28 +27,33 @@ public class ServerClass extends Thread{
     private boolean isConnected;
     
     public ServerClass() throws IOException {
-        server=new ServerSocket(1207);      
+        server=new ServerSocket(1206);     
     }
 
     public boolean isIsConnected() {
         return isConnected;
     }
     
-    @Override
-    public void run(){
-        try {
-            com=server.accept();
-            dis=new DataInputStream(com.getInputStream());
-            dos=new DataOutputStream(com.getOutputStream());
-            isConnected=true;
-        } catch (IOException ex) {
-            Logger.getLogger(ServerClass.class.getName()).log(Level.SEVERE, null, ex);
+    private class Comm extends Thread{
+        @Override
+        public void run(){
+            try {
+                com=server.accept();
+                dis=new DataInputStream(com.getInputStream());
+                dos=new DataOutputStream(com.getOutputStream());
+                isConnected=true;
+            } catch (IOException ex) {
+                Logger.getLogger(ServerClass.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
     }
-    
-    public void passwordCheck() throws IOException, Exception{
+    public void attentComm(){
+        Comm connect=new Comm();
+        connect.start();
+    }
+    public void passwordCheck() throws IOException{
         if(!isConnected){
-            throw new Exception("No esta conectado");
+            throw new IOException("No esta conectado");
         }
         Properties prop=new Properties();
         prop.load(new FileReader("properties/pswd.properties"));
@@ -65,16 +70,21 @@ public class ServerClass extends Thread{
         }
     }
     public void resetter() throws IOException{
-        com.close();
+        isConnected=false;
+        com=null;
     }
     
     public void calculate() throws IOException{
+        if(!isConnected){
+            throw new IOException("No esta conectado");
+        }
         float salario=dis.readFloat();
-        float inss=inss(salario);
-        float ir=ir(salario);
+        float inss=(inss(salario*12)/12);
+        float ir=(ir(salario*12)/12);
         float neto=salario-inss-ir;
+        System.out.println(salario);
         dos.writeUTF(String.format("%.2f", salario)+","+String.format("%.2f", ir)+","+
-                String.format("%.2f", inss)+","+String.format("%.2f", neto)+",");
+                String.format("%.2f", inss)+","+String.format("%.2f", neto));
     }
     //metodos para calcular
     private float inss(float base){
