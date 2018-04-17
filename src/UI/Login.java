@@ -5,17 +5,30 @@
  */
 package UI;
 
+import Server.ServerClass;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.Socket;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JOptionPane;
+
 /**
  *
  * @author Sistema19
  */
 public class Login extends javax.swing.JDialog {
-
+    private Socket com;
+    private DataOutputStream dos;
+    private DataInputStream dis;
+    private ServerClass server;
     /**
      * Creates new form Login
      */
     public Login(java.awt.Frame parent, boolean modal) {
-        super(parent, modal);
+        super(parent, modal); 
         initComponents();
     }
 
@@ -27,22 +40,98 @@ public class Login extends javax.swing.JDialog {
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
+        java.awt.GridBagConstraints gridBagConstraints;
+
+        jPanel1 = new javax.swing.JPanel();
+        subbtn = new javax.swing.JButton();
+        jPanel2 = new javax.swing.JPanel();
+        jLabel1 = new javax.swing.JLabel();
+        jLabel2 = new javax.swing.JLabel();
+        usertxt = new javax.swing.JTextField();
+        pswdtxt = new javax.swing.JPasswordField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowOpened(java.awt.event.WindowEvent evt) {
+                formWindowOpened(evt);
+            }
+        });
 
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 400, Short.MAX_VALUE)
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 300, Short.MAX_VALUE)
-        );
+        subbtn.setText("Entrar");
+        subbtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                subbtnActionPerformed(evt);
+            }
+        });
+        jPanel1.add(subbtn);
 
-        pack();
+        getContentPane().add(jPanel1, java.awt.BorderLayout.PAGE_END);
+
+        jPanel2.setLayout(new java.awt.GridBagLayout());
+
+        jLabel1.setText("Usuario");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.insets = new java.awt.Insets(11, 15, 11, 15);
+        jPanel2.add(jLabel1, gridBagConstraints);
+
+        jLabel2.setText("Contraseña");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.insets = new java.awt.Insets(11, 15, 11, 15);
+        jPanel2.add(jLabel2, gridBagConstraints);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.ipadx = 115;
+        gridBagConstraints.insets = new java.awt.Insets(11, 15, 11, 15);
+        jPanel2.add(usertxt, gridBagConstraints);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.ipadx = 65;
+        gridBagConstraints.insets = new java.awt.Insets(11, 15, 11, 15);
+        jPanel2.add(pswdtxt, gridBagConstraints);
+
+        getContentPane().add(jPanel2, java.awt.BorderLayout.CENTER);
+
+        setSize(new java.awt.Dimension(416, 339));
+        setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
+
+    private void subbtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_subbtnActionPerformed
+        String adm="pepe";
+        try {
+            dos.writeUTF(usertxt.getText()+","+String.valueOf(pswdtxt.getPassword()));
+            server.passwordCheck();
+            adm=dis.readUTF();
+        } catch (IOException ex) {
+            Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (Exception ex) {
+            Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        System.out.println(adm);
+        
+        if(adm.equals("true")){
+            Main frame=new Main();
+            frame.setVisible(true);
+            this.dispose();
+        }else{
+            JOptionPane.showMessageDialog(this, "Usuario o contraseña incorrectas","" , 0);
+        }
+    }//GEN-LAST:event_subbtnActionPerformed
+
+    private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
+        try {
+            server=new ServerClass();
+            server.start();
+            com=new Socket(InetAddress.getLocalHost().getHostAddress(), 1207);
+            dis=new DataInputStream(com.getInputStream());
+            dos=new DataOutputStream(com.getOutputStream());
+        } catch (IOException ex) {
+            Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_formWindowOpened
 
     /**
      * @param args the command line arguments
@@ -87,5 +176,12 @@ public class Login extends javax.swing.JDialog {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
+    private javax.swing.JPasswordField pswdtxt;
+    private javax.swing.JButton subbtn;
+    private javax.swing.JTextField usertxt;
     // End of variables declaration//GEN-END:variables
 }
